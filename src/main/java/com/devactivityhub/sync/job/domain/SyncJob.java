@@ -75,6 +75,10 @@ public class SyncJob extends BaseTimeEntity {
         this.status = status;
     }
 
+    public void updateScheduleType(SyncScheduleType scheduleType) {
+        this.scheduleType = scheduleType;
+    }
+
     public Long getId() {
         return id;
     }

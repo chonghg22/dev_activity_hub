@@ -48,6 +48,12 @@ app:
     per-page: ${GITHUB_API_PER_PAGE:100}
     max-pages: ${GITHUB_API_MAX_PAGES:10}
     cursor-overlap-minutes: ${GITHUB_CURSOR_OVERLAP_MINUTES:5}
+  sync:
+    scheduler:
+      enabled: ${APP_SYNC_SCHEDULER_ENABLED:true}
+      fixed-delay-ms: ${APP_SYNC_SCHEDULER_FIXED_DELAY_MS:300000}
+      hourly-interval-minutes: ${APP_SYNC_SCHEDULER_HOURLY_INTERVAL_MINUTES:60}
+      auto-upgrade-legacy-manual-jobs: ${APP_SYNC_SCHEDULER_AUTO_UPGRADE_LEGACY_MANUAL_JOBS:true}
 
 logging:
   level:
