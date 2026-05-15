@@ -1,5 +1,6 @@
 package com.devactivityhub.project.service;
 
+import com.devactivityhub.common.api.PageResponse;
 import com.devactivityhub.common.error.DuplicateResourceException;
 import com.devactivityhub.common.error.ResourceNotFoundException;
 import com.devactivityhub.project.domain.Project;
@@ -8,10 +9,10 @@ import com.devactivityhub.project.dto.ProjectCreateRequest;
 import com.devactivityhub.project.dto.ProjectResponse;
 import com.devactivityhub.project.dto.ProjectUpdateRequest;
 import com.devactivityhub.project.repository.ProjectRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -24,11 +25,9 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponse> getProjects() {
-        return projectRepository.findAll()
-                .stream()
-                .map(ProjectResponse::from)
-                .toList();
+    public PageResponse<ProjectResponse> getProjects(int page, int size) {
+        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return PageResponse.from(projectRepository.findAll(pageable).map(ProjectResponse::from));
     }
 
     public ProjectResponse createProject(ProjectCreateRequest request) {

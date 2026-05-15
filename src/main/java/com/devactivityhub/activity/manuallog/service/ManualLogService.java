@@ -10,9 +10,11 @@ import com.devactivityhub.activity.manuallog.repository.ManualLogRepository;
 import com.devactivityhub.activity.manuallog.repository.ManualLogSpecifications;
 import com.devactivityhub.activity.tag.domain.Tag;
 import com.devactivityhub.activity.tag.repository.TagRepository;
+import com.devactivityhub.common.api.PageResponse;
 import com.devactivityhub.common.error.ResourceNotFoundException;
 import com.devactivityhub.project.domain.Project;
 import com.devactivityhub.project.service.ProjectService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,19 +46,22 @@ public class ManualLogService {
     }
 
     @Transactional(readOnly = true)
-    public List<ManualLogResponse> getManualLogs(Long projectId,
-                                                 ManualLogActivityType activityType,
-                                                 String tag,
-                                                 LocalDate from,
-                                                 LocalDate to,
-                                                 String keyword) {
-        return manualLogRepository.findAll(
+    public PageResponse<ManualLogResponse> getManualLogs(Long projectId,
+                                                         ManualLogActivityType activityType,
+                                                         String tag,
+                                                         LocalDate from,
+                                                         LocalDate to,
+                                                         String keyword,
+                                                         int page,
+                                                         int size) {
+        var sort = Sort.by(Sort.Direction.DESC, "workDate").and(Sort.by(Sort.Direction.DESC, "id"));
+        var pageable = PageRequest.of(page, size, sort);
+        return PageResponse.from(
+                manualLogRepository.findAll(
                         ManualLogSpecifications.withFilters(projectId, activityType, tag, from, to, keyword),
-                        Sort.by(Sort.Direction.DESC, "workDate").and(Sort.by(Sort.Direction.DESC, "id"))
-                )
-                .stream()
-                .map(ManualLogResponse::from)
-                .toList();
+                        pageable
+                ).map(ManualLogResponse::from)
+        );
     }
 
     public ManualLogResponse createManualLog(ManualLogCreateRequest request) {

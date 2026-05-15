@@ -1,5 +1,6 @@
 package com.devactivityhub.project.controller;
 
+import com.devactivityhub.common.api.PageResponse;
 import com.devactivityhub.project.domain.ProjectStatus;
 import com.devactivityhub.project.domain.ProjectVisibility;
 import com.devactivityhub.project.dto.ProjectResponse;
@@ -37,12 +38,15 @@ class ProjectControllerTest {
     private ProjectService projectService;
 
     @Test
-    void getProjectsReturnsList() throws Exception {
-        when(projectService.getProjects()).thenReturn(List.of(sampleProjectResponse()));
+    void getProjectsReturnsPage() throws Exception {
+        var pageResponse = new PageResponse<>(List.of(sampleProjectResponse()), 0, 20, 1, 1, true, true);
+        when(projectService.getProjects(0, 20)).thenReturn(pageResponse);
 
         mockMvc.perform(get("/api/projects"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].slug").value("dev-activity-hub"));
+                .andExpect(jsonPath("$.content[0].slug").value("dev-activity-hub"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.page").value(0));
     }
 
     @Test

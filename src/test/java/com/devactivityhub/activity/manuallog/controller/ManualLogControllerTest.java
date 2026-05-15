@@ -5,6 +5,7 @@ import com.devactivityhub.activity.manuallog.domain.ManualLogVisibility;
 import com.devactivityhub.activity.manuallog.dto.ManualLogResponse;
 import com.devactivityhub.activity.manuallog.dto.ProjectReferenceResponse;
 import com.devactivityhub.activity.manuallog.service.ManualLogService;
+import com.devactivityhub.common.api.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -40,8 +41,9 @@ class ManualLogControllerTest {
 
     @Test
     void getManualLogsSupportsFilters() throws Exception {
-        when(manualLogService.getManualLogs(1L, ManualLogActivityType.WORK_LOG, "spring", LocalDate.of(2026, 5, 1), LocalDate.of(2026, 5, 31), "cache"))
-                .thenReturn(List.of(sampleResponse()));
+        var pageResponse = new PageResponse<>(List.of(sampleResponse()), 0, 20, 1, 1, true, true);
+        when(manualLogService.getManualLogs(1L, ManualLogActivityType.WORK_LOG, "spring", LocalDate.of(2026, 5, 1), LocalDate.of(2026, 5, 31), "cache", 0, 20))
+                .thenReturn(pageResponse);
 
         mockMvc.perform(get("/api/manual-logs")
                         .param("projectId", "1")
@@ -51,7 +53,9 @@ class ManualLogControllerTest {
                         .param("to", "2026-05-31")
                         .param("keyword", "cache"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].tags[0]").value("spring"));
+                .andExpect(jsonPath("$.content[0].tags[0]").value("spring"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.page").value(0));
     }
 
     @Test
