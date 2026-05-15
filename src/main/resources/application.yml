@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: dev-activity-hub
+  datasource:
+    url: jdbc:postgresql://${SUPABASE_DB_HOST}:${SUPABASE_DB_PORT:5432}/${SUPABASE_DB_NAME:postgres}?sslmode=require&currentSchema=${APP_DB_SCHEMA:dev_activity_hub}&prepareThreshold=0&preferQueryMode=simple
+    username: ${SUPABASE_DB_USERNAME:postgres}
+    password: ${SUPABASE_DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: ${APP_DB_SCHEMA:dev_activity_hub}
+        format_sql: true
+  flyway:
+    enabled: true
+    default-schema: ${APP_DB_SCHEMA:dev_activity_hub}
+    schemas: ${APP_DB_SCHEMA:dev_activity_hub}
+    create-schemas: true
+    baseline-on-migrate: true
+  jackson:
+    time-zone: Asia/Seoul
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+server:
+  shutdown: graceful
+
+app:
+  database:
+    schema: ${APP_DB_SCHEMA:dev_activity_hub}
+  github:
+    api-base-url: ${GITHUB_API_BASE_URL:https://api.github.com}
+    token: ${GITHUB_TOKEN:}
+    per-page: ${GITHUB_API_PER_PAGE:100}
+    max-pages: ${GITHUB_API_MAX_PAGES:10}
+    cursor-overlap-minutes: ${GITHUB_CURSOR_OVERLAP_MINUTES:5}
+
+logging:
+  level:
+    org.hibernate.SQL: info
