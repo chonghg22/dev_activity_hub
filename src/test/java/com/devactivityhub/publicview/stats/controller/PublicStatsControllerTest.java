@@ -39,6 +39,9 @@ class PublicStatsControllerTest {
                         2,
                         15,
                         4,
+                        6,
+                        2,
+                        9,
                         List.of(new PublicActivityTypeMetricResponse("WORK_LOG", 10))
                 )
         );
@@ -47,6 +50,11 @@ class PublicStatsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string("Cache-Control", "max-age=300, must-revalidate, public"))
                 .andExpect(jsonPath("$.publicProjectCount").value(2))
+                .andExpect(jsonPath("$.totalCommitCount").value(15))
+                .andExpect(jsonPath("$.weeklyCommitCount").value(4))
+                .andExpect(jsonPath("$.totalPullRequestActivityCount").value(6))
+                .andExpect(jsonPath("$.weeklyPullRequestActivityCount").value(2))
+                .andExpect(jsonPath("$.recent7DayActivityCount").value(9))
                 .andExpect(jsonPath("$.activityTypeCounts[0].activityType").value("WORK_LOG"));
     }
 

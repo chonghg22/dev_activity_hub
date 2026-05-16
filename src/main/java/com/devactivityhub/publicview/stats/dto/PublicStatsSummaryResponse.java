@@ -4,8 +4,11 @@ import java.util.List;
 
 public record PublicStatsSummaryResponse(
         long publicProjectCount,
-        long publicManualLogCount,
-        long highlightedLogCount,
+        long totalCommitCount,
+        long weeklyCommitCount,
+        long totalPullRequestActivityCount,
+        long weeklyPullRequestActivityCount,
+        long recent7DayActivityCount,
         List<PublicActivityTypeMetricResponse> activityTypeCounts
 ) {
 }
