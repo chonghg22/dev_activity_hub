@@ -38,6 +38,8 @@ public class SyncJobScheduler {
 
     @Scheduled(fixedDelayString = "${app.sync.scheduler.fixed-delay-ms:300000}")
     public void runScheduledJobs() {
+        log.info("Scheduler triggered. enabled={}", syncSchedulerProperties.resolvedEnabled());
+
         if (!syncSchedulerProperties.resolvedEnabled()) {
             return;
         }
@@ -47,10 +49,14 @@ public class SyncJobScheduler {
         List<SyncJob> githubJobs = syncJobRepository.findAllBySourceType(GITHUB_SOURCE_TYPE);
         OffsetDateTime now = OffsetDateTime.now();
 
-        githubJobs.stream()
+        List<SyncJob> dueJobs = githubJobs.stream()
                 .filter(this::isSchedulable)
                 .filter(job -> isDue(job, now))
-                .forEach(this::runGithubJobSafely);
+                .toList();
+
+        log.info("Scheduler check complete. totalJobs={}, dueJobs={}", githubJobs.size(), dueJobs.size());
+
+        dueJobs.forEach(this::runGithubJobSafely);
     }
 
     private boolean isSchedulable(SyncJob job) {
